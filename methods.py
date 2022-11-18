@@ -9,15 +9,62 @@ import cv2
 import pandas as pd
 from typing import Tuple
 
-def crop_rotate_dir(input_dir = 'input',output_dir='output', angle = -1.5, left = 135, upper =85, right = 600, lower = 390):
+"""
+Image registration uses '220104_152235_862416.jpeg' as the standard/src image
+to align a given image to. 
+Code taken from https://www.geeksforgeeks.org/image-registration-using-opencv-python/
+"""
+def align_to_standard(img_dir, src_dir='src.jpeg'):
+    src_color = cv2.imread(src_dir)
+    sbj_color = cv2.imread(img_dir)
+
+    src = cv2.cvtColor(src_color, cv2.COLOR_BGR2GRAY)
+    sbj = cv2.cvtColor(sbj_color, cv2.COLOR_BGR2GRAY)
+    
+    orb_detector = cv2.ORB_create(500)
+    src_keypoints, src_descriptors = orb_detector.detectAndCompute(src, None)
+    sbj_keypoints, sbj_descriptors = orb_detector.detectAndCompute(sbj,None)
+
+    matcher = cv2.BFMatcher(cv2.NORM_HAMMING, crossCheck = True)
+    matches = list(matcher.match(sbj_descriptors, src_descriptors))
+    
+    matches.sort(key = lambda x: x.distance)
+    matches = matches[:int(len(matches)*0.9)]
+    # records matched keypoints' coordinates
+    no_of_matches = len(matches)
+    p1 = np.zeros((no_of_matches, 2))
+    p2 = np.zeros((no_of_matches, 2))
+
+    for i in range(no_of_matches):
+        p1[i, :] = sbj_keypoints[matches[i].queryIdx].pt
+        p2[i, :] = src_keypoints[matches[i].trainIdx].pt
+    
+    homography, mask = cv2.findHomography(p1, p2, cv2.RANSAC)
+    transformed_img = cv2.warpPerspective(sbj,
+                        homography, (src.shape[1], src.shape[0]))
+    return transformed_img
+"""
+Melody's modified method. For her pipeline
+"""
+def crop_rotate_dir(img, og_file_dir, output_dir='output', angle = -1.5, left = 135, upper =85, right = 600, lower = 390):
+    filename = og_file_dir.split('/')[-1]
+    im = Image.fromarray(img)
+    rotated = im.rotate(angle, expand = 1)
+    im_final = rotated.crop((left, upper, right, lower))            
+    im_final.save(output_dir+'/'+filename)
+    
+"""
+og from Daniel
+"""
+# def crop_rotate_dir(input_dir = 'input',output_dir='output', angle = -1.5, left = 135, upper =85, right = 600, lower = 390):
     # read every image file from the input folder
-    for filename in glob.glob(input_dir+'/*.jpg'):
-        # print(filename)
-        with Image.open(filename) as im:
-            # (left, upper, right, lower) = (100, 60, 630, 400)
-            rotated = im.rotate(angle, expand = 1)
-            im_final = rotated.crop((left, upper, right, lower))            
-            im_final.save(filename.replace(input_dir, output_dir))
+    # for filename in glob.glob(input_dir+'/*.jpg'):
+    #     # print(filename)
+    #     with Image.open(filename) as im:
+    #         # (left, upper, right, lower) = (100, 60, 630, 400)
+    #         rotated = im.rotate(angle, expand = 1)
+    #         im_final = rotated.crop((left, upper, right, lower))            
+    #         im_final.save(filename.replace(input_dir, output_dir))
 
 """
 input: filename of plate
