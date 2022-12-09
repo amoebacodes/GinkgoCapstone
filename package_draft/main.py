@@ -36,7 +36,7 @@ def save_to_txt(beads_ids,beads_coors):
 if __name__ == "__main__":
     # load in arguments from command line
     parser = ArgumentParser(description='meg.beads_detection')
-    parser.add_argument('--image_path', type=str, default='221019_122109_1043495.jpg')
+    parser.add_argument('--image_path', type=str, default="221019_122109_1043495.jpg")
     parser.add_argument('--algorithm_name', type=str, default="deep_learning")  # options: ..., deep_learning, deep_learning_aug
     parser.add_argument('--plate_name', type=str, default="my_plate")  
     parser.add_argument('--image_registration', action='store_true') # default = False

@@ -6,12 +6,13 @@ from helper import index_to_letter
 
 
 # load model
-if torch.cuda.is_available():
-    device = torch.device('cuda:0')
-elif torch.backends.mps.is_available():
-    device = torch.device('mps:0')
-else:
-    device = torch.device('cpu')
+# if torch.cuda.is_available():
+#     device = torch.device('cuda:0')
+# elif torch.backends.mps.is_available():
+#     device = torch.device('mps:0')
+# else:
+#     device = torch.device('cpu')
+device = torch.device('cpu')
 print("device: ", device)
 
 model_path = r'saved_models/mlp.pth'
@@ -61,5 +62,6 @@ def make_prediction(wells, model):
 
 def DL_finder(wells, algorithm):
     model = load_model(algorithm)
-    beads_ids, beads_coors, count = make_prediction(wells, model)
+    with torch.no_grad():
+        beads_ids, beads_coors, count = make_prediction(wells, model)
     return beads_ids, beads_coors, count
