@@ -10,8 +10,8 @@ python main.py  --image_path '221019_122109_1043495.jpg' --algorithm 'deep_learn
 def validate_image_path(image_path):
     if not os.path.isfile(image_path):
         raise FileNotFoundError('Image path is not a file.')
-def validate_output_dir(output_dir):
-    if not os.path.isdir(output_dir):
+def validate_output_path(output_path):
+    if not os.path.exists(output_path):
         raise FileNotFoundError('Directory not found.')
 
 def validate(args):
@@ -22,7 +22,7 @@ def validate(args):
                 for saving the heatmap of the plate. If you wish not to save the heatmap, you can set show_heatmap\
                 to true, and the heatmap will be a pop-up window.')
         else:
-            validate_output_dir(args.output_dir)
+            validate_output_path(args.output_dir)
     validate_image_path(args.image_path)
     if args.label == None:
         #TODO: log this as warning

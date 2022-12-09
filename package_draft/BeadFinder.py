@@ -9,13 +9,13 @@ import numpy as np
 BeadFinder implements a specified algorithm to identify beads from an image
 """
 class BeadFinder():
-    def __init__(self, image_path, algorithm_name, label, image_registration, show_heatmap, output_dir):
+    def __init__(self, image_path, algorithm_name, label, image_registration, show_heatmap, output_path):
         self.image_path = image_path
         self.algorithm_name = algorithm_name # algorithm_name name
         self.label = label
         self.image_registration = image_registration
         self.show_heatmap = show_heatmap
-        self.output_dir = output_dir
+        self.output_path = output_path
 
         self._instantiate_algorithm()
 
@@ -68,7 +68,14 @@ class BeadFinder():
 
         # get heatmap
         img_th = load_and_preprocess_img(img, gaussian_kernel_size=(3,3), thresh=cv2.THRESH_BINARY, adapt=cv2.ADAPTIVE_THRESH_GAUSSIAN_C, adp_th_block_size=5, adp_th_const=4, gaussian_sigma=1.0)
-        img_th_title = f'Machine vision algorithm ({self.algorithm_name}) output: {self.label}'
+        
+        # isolate wells
+        wells = self._isolate_wells_for_algorithm(img, img_th)
+        
+        beads_ids, beads_coors, count = self.algorithm(wells, self.algorithm_name)
+        
+        if self.label:
+            img_th_title = f'Machine vision algorithm ({self.algorithm_name}) output: {self.label} \n {count}/384 or about {100 * count // 384}% wells have beads'
         plt.imshow(img_th)
         plt.title(img_th_title)
         plt.xticks(set_x_ticks(img_th), list(range(1,25)))
@@ -76,12 +83,7 @@ class BeadFinder():
         if self.show_heatmap:
             plt.show()
         else:
-            plt.savefig(f'{self.output_dir}/{img_th_title}.png')
-
-        # isolate wells
-        wells = self._isolate_wells_for_algorithm(img, img_th)
-        
-        beads_ids, beads_coors, count = self.algorithm(wells, self.algorithm_name)
+            plt.savefig(f'{self.output_path}')
 
         return beads_ids, beads_coors, count
 
