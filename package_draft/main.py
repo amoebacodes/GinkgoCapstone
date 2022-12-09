@@ -39,8 +39,8 @@ if __name__ == "__main__":
     parser.add_argument('--image_path', type=str, default='221019_122109_1043495.jpg')
     parser.add_argument('--algorithm_name', type=str, default="deep_learning")  # options: ..., deep_learning, deep_learning_aug
     parser.add_argument('--plate_name', type=str, default="my_plate")  
-    parser.add_argument('--image_registration', action='store_false') # default = False
-    parser.add_argument('--show_heatmap', action='store_false') # default = False
+    parser.add_argument('--image_registration', action='store_true') # default = False
+    parser.add_argument('--show_heatmap', action='store_true') # default = False
     parser.add_argument('--output_dir', type=str)
     args = parser.parse_args()
 
