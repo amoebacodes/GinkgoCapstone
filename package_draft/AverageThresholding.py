@@ -1,10 +1,13 @@
 import numpy as np
 from helper import *
-def AverageThresholding(wells, *args, **kwargs):
+def AverageThresholding(wells: np.ndarray, *args, **kwargs) -> Tuple[List[str], List[Tuple[int,int]], int]:
     """
-    Uses particle detection to predict whether or not bead is present.
-    Returns accuracy and a list of unsure well locations for each img (if particle_detection_prediction returns -1)
-        which means that more than one particle is detected in the well
+    In the grayscale image of a well, we predict that there is a bead if there is a lot of
+    variations in intensity, and no beads if the variation is low.
+    
+    output: a list of well ids (e.g. A1) that has beads detected
+            a list of well coordinates (0-indexed) with detected beads (tuple form)
+            total number of wells with beads
     """
     bead_id, bead_coor = [], []
     

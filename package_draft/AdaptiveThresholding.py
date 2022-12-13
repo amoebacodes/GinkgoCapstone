@@ -1,11 +1,17 @@
 import numpy as np
 from helper import *
 
-def AdaptiveThresholding(wells, *args, **kwargs):
+def AdaptiveThresholding(wells: np.ndarray, *args, **kwargs) -> Tuple[List[str], List[Tuple[int,int]], int]:
     """
-    Uses particle detection to predict whether or not bead is present.
-    Returns accuracy and a list of unsure well locations for each img (if particle_detection_prediction returns -1)
-        which means that more than one particle is detected in the well
+    After cropping out only the middle of a well from the thresholded image,
+    if it contains two unique values, i.e. background and foreground, where the foreground is
+    darker regions, which are assumed to be beads, then the prediction is 1, suggesting presence of beads;
+    if it contains only one unique value, we assume it to be the background due to the size and color of 
+    beads relative to the plate, then the prediction is 0, suggesting absence of beads.
+    
+    output: a list of well ids (e.g. A1) that has beads detected
+            a list of well coordinates (0-indexed) with detected beads (tuple form)
+            total number of wells with beads
     """
     bead_id, bead_coor = [], []
     

@@ -9,7 +9,7 @@ import numpy as np
 BeadFinder implements a specified algorithm to identify beads from an image
 """
 class BeadFinder():
-    def __init__(self, image_path, algorithm_name, label, image_registration, show_heatmap, output_path):
+    def __init__(self, image_path: str, algorithm_name: str, label: str, image_registration: bool, show_heatmap: bool, output_path: str):
         self.image_path = image_path
         self.algorithm_name = algorithm_name # algorithm_name name
         self.label = label
@@ -20,7 +20,7 @@ class BeadFinder():
         self._instantiate_algorithm()
 
     
-    def _instantiate_algorithm(self):
+    def _instantiate_algorithm(self) -> None:
         """
         Instantiate algorithm from algorithm name to prep for find_beads()
         """
@@ -33,16 +33,29 @@ class BeadFinder():
         else:
             raise ValueError("Invalid algorithm name!")
     
-    def get_algorithm_name(self):
-        # getter not supported on command line. for python-based dev purpose
+    def get_algorithm_name(self) -> str:
+        """
+        for python-based dev purpose or usage in python notebook, not supported on the command line
+        gets the algorithm name
+        """
         return self.algorithm_name
 
-    def set_algorithm_to(self, algorithm_name):
-        # setter not supported on command line. for python-based dev purpose
+    def set_algorithm_to(self, algorithm_name: str) -> None:
+        """
+        for python-based dev purpose or usage in python notebook, not supported on command line 
+        change the machine vision algorithm
+        """
         self.algorithm_name = algorithm_name
         self._instantiate_algorithm()
 
-    def _isolate_wells_for_algorithm(self, img, img_th):
+    def _isolate_wells_for_algorithm(self, img: np.ndarray, img_th: np.ndarray) -> np.ndarray:
+        """
+        Depending on the algorithm specified, isolate wells from either:
+            the RGB 3-channel plate image (deep learning)
+            the thresholded plate image (adaptive thresholding)
+            the grayscale plate image (average thresholding)
+        output: a 16 x 24 ndarray, each entry is an isolated well-image
+        """
         if self.algorithm_name== "deep_learning" or self.algorithm_name == "deep_learning_aug":
             wells = isolate_each_well(img)  # a 16 x 24 numpy ndarray, each entry is the isolated well image
         elif self.algorithm_name == "adaptive_thresholding":
@@ -51,12 +64,13 @@ class BeadFinder():
             wells = isolate_each_well(np.asarray(Image.fromarray(img).convert('L')))
         return wells
 
-    """
-    output: a list of well ids (e.g. A1) that has beads detected
-            a list of well coordinates (0-indexed) with detected beads
-            total number of wells with beads
-    """
-    def find_beads(self):
+    def find_beads(self) -> Tuple[List[str], List[int], int]:
+        """
+        print the following outputs and also show/save heatmap
+        output: a list of well ids (e.g. A1) that has beads detected
+                a list of well coordinates (0-indexed) with detected beads
+                total number of wells with beads
+        """
         # load image and optional registration and crop and rotate
         image_path = self.image_path
         if self.image_registration:
@@ -72,10 +86,17 @@ class BeadFinder():
         # isolate wells
         wells = self._isolate_wells_for_algorithm(img, img_th)
         
+        # get results
         beads_ids, beads_coors, count = self.algorithm(wells, self.algorithm_name)
         
+        # convert bead coordinates to desired format
+        beads_coors_to_int = coor_tuple_to_int(beads_coors)
+        
+        # show/save heatmap
         if self.label:
             img_th_title = f'Machine vision algorithm ({self.algorithm_name}) output: {self.label} \n {count}/384 or about {100 * count // 384}% wells have beads'
+        else:
+            img_th_title = f'Machine vision algorithm ({self.algorithm_name}) \n {count}/384 or about {100 * count // 384}% wells have beads'
         plt.imshow(img_th)
         plt.title(img_th_title)
         plt.xticks(set_x_ticks(img_th), list(range(1,25)))
@@ -85,7 +106,14 @@ class BeadFinder():
         else:
             plt.savefig(f'{self.output_path}')
 
-        return beads_ids, beads_coors, count
+
+        # print output
+        print('Well_ids with beads: \n', beads_ids)
+        print('They are at the following coordinates: \n', beads_coors_to_int)
+        # print stats
+        print(f"There are {count}/384 or about {100 * count // 384}% wells that have mag.beads")
+
+        return beads_ids, beads_coors_to_int, count
 
 
 
