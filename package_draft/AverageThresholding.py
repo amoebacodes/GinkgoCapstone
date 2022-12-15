@@ -1,18 +1,20 @@
 import numpy as np
 from helper import *
+from tqdm import tqdm
+
 def AverageThresholding(wells: np.ndarray, *args, **kwargs) -> Tuple[List[str], List[Tuple[int,int]], int]:
     """
     In the grayscale image of a well, we predict that there is a bead if there is a lot of
     variations in intensity, and no beads if the variation is low.
-    
+
     output: a list of well ids (e.g. A1) that has beads detected
             a list of well coordinates (0-indexed) with detected beads (tuple form)
             total number of wells with beads
     """
     bead_id, bead_coor = [], []
     
-    for row in range(wells.shape[0]):
-        for col in range(wells.shape[1]):
+    for row in tqdm(range(wells.shape[0]),desc='processing rows'):
+        for col in tqdm(range(wells.shape[1]),desc='processing columns for each row', leave=True):
             if exclude_wells(col, row):
                 continue
             well = np.array(wells[row,col])

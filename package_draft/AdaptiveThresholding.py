@@ -1,5 +1,6 @@
 import numpy as np
 from helper import *
+from tqdm import tqdm
 
 def AdaptiveThresholding(wells: np.ndarray, *args, **kwargs) -> Tuple[List[str], List[Tuple[int,int]], int]:
     """
@@ -8,15 +9,15 @@ def AdaptiveThresholding(wells: np.ndarray, *args, **kwargs) -> Tuple[List[str],
     darker regions, which are assumed to be beads, then the prediction is 1, suggesting presence of beads;
     if it contains only one unique value, we assume it to be the background due to the size and color of 
     beads relative to the plate, then the prediction is 0, suggesting absence of beads.
-    
+
     output: a list of well ids (e.g. A1) that has beads detected
             a list of well coordinates (0-indexed) with detected beads (tuple form)
             total number of wells with beads
     """
     bead_id, bead_coor = [], []
     
-    for row in range(wells.shape[0]):
-        for col in range(wells.shape[1]):
+    for row in tqdm(range(wells.shape[0]),desc='processing rows'):
+        for col in tqdm(range(wells.shape[1]),desc='processing columns for each row', leave=False):
             if exclude_wells(col, row):
                 continue
             

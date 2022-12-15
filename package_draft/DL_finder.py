@@ -5,16 +5,18 @@ from torchvision import transforms
 from helper import index_to_letter
 from typing import List, Tuple
 import numpy as np
+from tqdm import tqdm
+import logging 
+
+logger = logging.getLogger('mainLogging')
 
 # load model
-# if torch.cuda.is_available():
-#     device = torch.device('cuda:0')
-# elif torch.backends.mps.is_available():
-#     device = torch.device('mps:0')
-# else:
-#     device = torch.device('cpu')
-device = torch.device('cpu')
-print("device: ", device)
+if torch.cuda.is_available():
+    device = torch.device('cuda:0')
+elif torch.backends.mps.is_available():
+    device = torch.device('mps:0')
+else:
+    device = torch.device('cpu')
 
 model_path = r'saved_models/mlp.pth'
 model2_path = r'saved_models/mlp_aug.pth'
@@ -26,14 +28,17 @@ def load_model(algorithm: str) -> MLP:
     """
     model = MLP()
     if algorithm == "deep_learning":
-        msg = "load DL detection model"
+        msg = "Load DL detection model without data augmentation"
         model.load_state_dict(torch.load(model_path, map_location=torch.device('cpu')))
     elif algorithm == "deep_learning_aug":
-        msg = "load DL detection model with data augmentation "
+        msg = "Load DL detection model with data augmentation "
         model.load_state_dict(torch.load(model2_path, map_location=torch.device('cpu')))
     model.to(device)
     model.eval()
-    print(msg)
+
+    logger.info(msg)
+    logger.info(f"Device for deep learning: {device}")
+
     return model
 
 
@@ -46,8 +51,8 @@ def make_prediction(wells: np.ndarray, model: MLP) -> Tuple[List[str], List[Tupl
     beads_ids = []
     beads_coors = []
     count = 0
-    for row in range(wells.shape[0]):
-        for col in range(wells.shape[1]):
+    for row in tqdm(range(wells.shape[0]),desc='processing rows'):
+        for col in tqdm(range(wells.shape[1]),desc='processing columns for each row', leave=False):
             # make prediction for each single well
             well = wells[row, col][:19, :19, :]  # (19, 19, 3)
             img = Image.fromarray(well)  # PIL

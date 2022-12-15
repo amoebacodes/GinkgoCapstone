@@ -4,12 +4,15 @@ from AdaptiveThresholding import *
 from AverageThresholding import *
 from helper import *
 import numpy as np
-
+import logging
 """
 BeadFinder implements a specified algorithm to identify beads from an image
 """
+logger = logging.getLogger('mainLogging')
+
 class BeadFinder():
     def __init__(self, image_path: str, algorithm_name: str, label: str, image_registration: bool, show_heatmap: bool, output_path: str):
+        logger.info('Initializing...')
         self.image_path = image_path
         self.algorithm_name = algorithm_name # algorithm_name name
         self.label = label
@@ -24,6 +27,7 @@ class BeadFinder():
         """
         Instantiate algorithm from algorithm name to prep for find_beads()
         """
+        logger.info(f'Getting ready to run {self.algorithm_name} method...')
         if self.algorithm_name == "adaptive_thresholding":
             self.algorithm = AdaptiveThresholding
         elif self.algorithm_name == "average_thresholding":
@@ -74,6 +78,7 @@ class BeadFinder():
         # load image and optional registration and crop and rotate
         image_path = self.image_path
         if self.image_registration:
+            logger.info('Performing image registration...')
             img = align_to_standard(image_path)
             img = crop_rotate_from_arr(img)
         else:
@@ -81,12 +86,15 @@ class BeadFinder():
         img = np.asarray(img)
 
         # get heatmap
+        logger.info('Getting heatmap...')
         img_th = load_and_preprocess_img(img, gaussian_kernel_size=(3,3), thresh=cv2.THRESH_BINARY, adapt=cv2.ADAPTIVE_THRESH_GAUSSIAN_C, adp_th_block_size=5, adp_th_const=4, gaussian_sigma=1.0)
         
         # isolate wells
+        logger.info('Cropping out wells from the plate image...')
         wells = self._isolate_wells_for_algorithm(img, img_th)
         
         # get results
+        logger.info('Finding beads...')
         beads_ids, beads_coors, count = self.algorithm(wells, self.algorithm_name)
         
         # convert bead coordinates to desired format
@@ -102,8 +110,10 @@ class BeadFinder():
         plt.xticks(set_x_ticks(img_th), list(range(1,25)))
         plt.yticks(set_y_ticks(img_th), list(letters_to_index.keys()))
         if self.show_heatmap:
+            logger.info('Showing heatmap...Please close the pop-up window to proceed.')
             plt.show()
         else:
+            logger.info('Saving heatmap...')
             plt.savefig(f'{self.output_path}')
 
 
