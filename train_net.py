@@ -125,7 +125,7 @@ def main():
             _, predicted = torch.max(outputs.data, 1)
             total += labels.size(0)
             correct += (predicted == labels).sum().item()
-
+            
             if j % args.check_point == args.check_point - 1:  # print every 400 mini-batches
                 path = os.path.join(args.save_path, str(j + 1)+'.pth')
                 torch.save(net.state_dict(), path)
@@ -140,7 +140,7 @@ def main():
                 running_loss = 0.0
                 total = 0.0
                 correct = 0.0
-
+                
                 # validation
                 correct_ = 0.0
                 loss_ = 0.0
