@@ -39,7 +39,7 @@ def validate_output_path(output_path) -> None:
 def validate_algorithm_name(name) -> None:
     if  name != "adaptive_thresholding" and\
         name != "average_thresholding" and \
-        name != "deep_learning" or\
+        name != "deep_learning" and\
         name != "deep_learning_aug":
         raise ValueError("Invalid algorithm name!")
 
