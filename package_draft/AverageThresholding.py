@@ -14,7 +14,7 @@ def AverageThresholding(wells: np.ndarray, *args, **kwargs) -> Tuple[List[str], 
     bead_id, bead_coor = [], []
     
     for row in tqdm(range(wells.shape[0]),desc='processing rows'):
-        for col in tqdm(range(wells.shape[1]),desc='processing columns for each row', leave=True):
+        for col in tqdm(range(wells.shape[1]),desc='processing columns for each row', leave=False):
             if exclude_wells(col, row):
                 continue
             well = np.array(wells[row,col])
