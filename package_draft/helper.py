@@ -10,6 +10,60 @@ from PIL import Image
 import cv2
 import pandas as pd
 from typing import Tuple, List
+import logging
+import os
+import argparse
+
+# create logger
+def config_logger() -> logging.Logger:
+    logger = logging.getLogger('mainLogging')
+    logger.setLevel(logging.INFO)
+
+    # create console handler and set level to debug
+    ch = logging.StreamHandler()
+    ch.setLevel(logging.INFO)
+
+    # create formatter
+    formatter = logging.Formatter('%(asctime)s - %(levelname)s - %(message)s')
+
+    # add formatter to ch
+    ch.setFormatter(formatter)
+
+    # add ch to logger
+    logger.addHandler(ch)
+    return logger
+
+logger = logging.getLogger('mainLogging')
+
+def validate_image_path(image_path: str) -> None:
+    if not os.path.isfile(image_path):
+        raise FileNotFoundError('Image path is not a file.')
+
+def validate_output_path(output_path) -> None:
+    output_dir = '/'.join(output_path.split('/')[:-1])
+    if not os.path.exists(output_dir):
+        raise FileNotFoundError('Directory of the output path not found.')
+
+def validate_algorithm_name(name) -> None:
+    if  name != "adaptive_thresholding" and\
+        name != "average_thresholding" and \
+        name != "deep_learning" and\
+        name != "deep_learning_aug":
+        raise ValueError("Invalid algorithm name!")
+
+def validate_cli(args: argparse.Namespace) -> None:
+    # if show_heatmap is false, save heatmap, and thus output dir must be specified
+    if not args.show_heatmap:
+        if args.output_path == None:
+            raise ValueError('When show_heatmap is set to false (default), user need to specify an output_dir' +
+                'for saving the heatmap of the plate. If you wish not to save the heatmap, you can set show_heatmap' +
+                'to true, and the heatmap will be a pop-up window.')
+        else:
+            validate_output_path(args.output_path)
+    validate_image_path(args.image_path)
+    validate_algorithm_name(args.algorithm_name)
+    if args.label == None:
+        logger.warning('We suggest giving your plate a name so the heatmap title can be more descriptive.')
 
 def crop_rotate(filename: str, angle: float = -1.5, left: int = 135, 
                 upper: int = 80, right: int = 600, lower: int = 390) -> Image.Image:

@@ -12,6 +12,19 @@ logger = logging.getLogger('mainLogging')
 
 class BeadFinder():
     def __init__(self, image_path: str, algorithm_name: str, label: str, image_registration: bool, show_heatmap: bool, output_path: str):
+        """
+        input:  image_path: path to the image being analyzed
+                algorithm_name: one of "adaptive_thresholding", "average_thresholding",
+                        "deep_learning" or "deep_learning_aug"
+                        deep_learning_aug is the deep learning model trained using augmented data
+                        deep learning is the deep learning model trained without using augmented data
+                label: the name of the plate. Will be displayed on the heatmap
+                image_registration: whether to perform image_registration. 
+                                    The reference image is src.jpeg in the package
+                show_heatmap: if true, show heatmap to notebook output if running Jupyter Notebook,
+                                show pop-up window if running on the command line
+                output_path: if specified (i.e. is not none), save heatmap to path
+        """
         logger.info('Initializing...')
         self.image_path = image_path
         self.algorithm_name = algorithm_name # algorithm_name name
@@ -112,7 +125,7 @@ class BeadFinder():
         if self.show_heatmap:
             logger.info('Showing heatmap...Please close the pop-up window to proceed.')
             plt.show()
-        else:
+        if self.output_path != None:
             logger.info('Saving heatmap...')
             plt.savefig(f'{self.output_path}')
 
