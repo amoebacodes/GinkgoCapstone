@@ -23,9 +23,9 @@ The BeadFinder is a software package developed by MSc in Automated Science stude
 #### Demo:
 
 Run the following on the command line
-{% highlight js %}
-python3 my/path/to/main.py --image_path='221019_122109_1043495.jpg' --algorithm_name=adaptive_thresholding --output_path=output/path/img.png --image_registration=True --show_heatmap=True
-{% endhighlight %}
+
+    python3 my/path/to/main.py --image_path='221019_122109_1043495.jpg' --algorithm_name=adaptive_thresholding --output_path=output/path/img.png --image_registration=True --show_heatmap=True
+
 
 ### Jupyter Notebook
 The inputs and outputs are identical to the command line interface. Please see demo.ipynb for an example.
