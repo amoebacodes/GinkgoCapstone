@@ -122,7 +122,7 @@ def align_to_standard(img_path: str, src_path='src.jpeg') -> np.ndarray:
     return transformed_img
 
 def load_and_preprocess_img(img_arr: np.ndarray, gaussian_kernel_size: Tuple = (3,3), 
-                            adapt=cv2.ADAPTIVE_THRESH_GAUSSIAN_C, thresh=cv2.THRESH_BINARY_INV, 
+                            adapt=cv2.ADAPTIVE_THRESH_GAUSSIAN_C, thresh=cv2.THRESH_BINARY, 
                             gaussian_sigma: float = 1.0, adp_th_block_size: int = 5, 
                             adp_th_const: int = 4) -> np.ndarray:
     """
