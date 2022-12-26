@@ -1,6 +1,6 @@
 The BeadFinder is a software package developed by MSc in Automated Science students at Carnegie Mellon University in collaboration with the automation and the NGS teams at Ginkgo Bioworks. It includes three different computer vision algorithms that report the locations and total number of beads that have been dispense into a 384-well plate by the Echo dispenser. It also shows and/or saves a thresholded image (heatmap), highlighting the darker areas (suggests bead presence) on the plate. Therefore, it can serve as a quality control tool, informing automation technicians of successful bead dispenses.  
 
-**Adaptive thresholding and the deep learning models with augmentation** have better performances out of the algorithms we have developed and tested (See [Bead Detection Algorithms: Results]). 
+**Adaptive thresholding and the deep learning models with augmentation** have better performances out of the algorithms we have developed and tested (See [Bead Detection Algorithms: Results](#bead-detection-algorithms-results)). 
 
 ## How to use:
 ### Command Line Interface
@@ -51,7 +51,7 @@ The 'heatmap' is a thresholded grayscale image of the whole plate, used in adapt
 3. For each well, calculate the standard deviation, mean, and minimum of the intensities
 4. If the minimum is more than 4 standard deviations away from the mean, then report bead found.
 #### Adaptive Thresholding
-1. Generate heatmap (see [Heatmap Generation])
+1. Generate heatmap (see [Heatmap Generation](#heatmap-generation))
 2. Draw a grid to separate out each well from the heatmap
 3. Focus on the center of the well, i.e. crop out the rim
 4. For each center of the well, if there is only one value (background), then there are no beads; if there are two values (background and foreground), then report bead found.
