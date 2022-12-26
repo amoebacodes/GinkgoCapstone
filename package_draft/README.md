@@ -68,14 +68,13 @@ The 'heatmap' is a thresholded grayscale image of the whole plate, used in adapt
       <th>F1-score</th>
     </tr>
   </thead>
-  <tfoot>
+  <tbody>
     <tr>
       <td>Average Thresholding; on all wells</td>
       <td>0.8690</td>
       <td>0.5876</td>
       <td>0.7406</td>
     </tr>
-  </tfoot>
     <tr>
       <td>Adaptive Thresholding; on all wells</td>
       <td>0.9968</td>
