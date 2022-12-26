@@ -76,7 +76,6 @@ The 'heatmap' is a thresholded grayscale image of the whole plate, used in adapt
       <td>0.7406</td>
     </tr>
   </tfoot>
-  <tbody>
     <tr>
       <td>Adaptive Thresholding; on all wells</td>
       <td>0.9968</td>
